@@ -210,5 +210,15 @@ public class TemperatureSeriesAnalysisTest {
         assertEquals(0.0, seriesAnalysis.min(), 0.00001);
         assertEquals(999.0, seriesAnalysis.max(), 0.00001);
     }
+
+    @Test
+    public void testNoArguments() {
+        TemperatureSeriesAnalysis seriesAnalysis = new TemperatureSeriesAnalysis();
+        assertThrows(IllegalArgumentException.class, seriesAnalysis::average);
+        assertThrows(IllegalArgumentException.class, seriesAnalysis::deviation);
+        assertThrows(IllegalArgumentException.class, seriesAnalysis::min);
+        assertThrows(IllegalArgumentException.class, seriesAnalysis::max);
+        assertThrows(IllegalArgumentException.class, seriesAnalysis::summaryStatistics);
+    }
 }
 
