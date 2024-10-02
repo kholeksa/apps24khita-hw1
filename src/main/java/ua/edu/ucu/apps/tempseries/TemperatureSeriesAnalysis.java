@@ -1,64 +1,140 @@
 package ua.edu.ucu.apps.tempseries;
 
+import java.util.InputMismatchException;
+import java.util.Arrays;
+
 public class TemperatureSeriesAnalysis {
+    private double[] temperatures;
+    private int size;
 
     public TemperatureSeriesAnalysis() {
-
+        this.temperatures = new double[0];
+        this.size = 0;
     }
 
-    public TemperatureSeriesAnalysis(double[] temperatureSeries) {
-
+    public TemperatureSeriesAnalysis(double[] temperatures) {
+        if (Arrays.stream(temperatures).min().orElse(0) < -273) {
+            throw new InputMismatchException();
+        }
+        this.temperatures = Arrays.copyOf(temperatures, temperatures.length);
+        this.size = temperatures.length;
     }
 
     public double average() {
-        return -1;
+        if (size == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        return Arrays.stream(temperatures).sum() / size;
     }
 
     public double deviation() {
-        return 0;
+        if (size == 0) {
+            throw new IllegalArgumentException();
+        }
+        
+        double average = average();
+        double total = 0;
+        for (double temp : temperatures) {
+            total += Math.pow(temp - average, 2);
+        }
+
+        return Math.sqrt(total / size);
     }
 
     public double min() {
-        return 0;
+        if (size == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        double min = temperatures[0];
+        for (double temp : temperatures) {
+            if (temp < min) {
+                min = temp;
+            }
+        }
+
+        return min;
     }
 
     public double max() {
-        return 0;
+        if (size == 0) {
+            throw new IllegalArgumentException();
+        }
+        double max = temperatures[0];
+        for (double temp : temperatures) {
+            if (temp > max) {
+                max = temp;
+            }
+        }
+        return max;
     }
 
     public double findTempClosestToZero() {
-        return 0;
+        return findTempClosestToValue(0);
     }
 
-    public double findTempClosestToValue(double tempValue) {
-        return 0;
+    public double findTempClosestToValue(double value) {
+        if (size == 0) {
+            throw new IllegalArgumentException();
+        }
+        double closest = temperatures[0];
+        for (double temp : temperatures) {
+            if (Math.abs(temp - value) < Math.abs(closest - value) ||
+                (Math.abs(temp - value) == Math.abs(closest - value) && temp > closest)) {
+                closest = temp;
+            }
+        }
+        
+        double absClosest = Math.abs(closest);
+        if (Arrays.stream(temperatures).anyMatch(temp -> temp == absClosest)) {
+            return absClosest;
+        }
+        return closest;
     }
 
-    public double[] findTempsLessThen(double tempValue) {
-        return null;
+    public double[] findTempsLessThan(double value) {
+        return Arrays.stream(temperatures).filter(temp -> temp < value).toArray();
     }
 
-    public double[] findTempsGreaterThen(double tempValue) {
-        return null;
+    public double[] findTempsGreaterThan(double value) {
+        return Arrays.stream(temperatures).filter(temp -> temp >= value).toArray();
     }
 
-    public double[] findTempsInRange(double lowerBound, double upperBound) {
-        return null;
+    public double[] findTempsInRange(double lower, double upper) {
+        return Arrays.stream(temperatures).filter(temp -> temp >= lower && temp <= upper).toArray();
     }
 
     public void reset() {
-
+        temperatures = new double[0];
+        size = 0;
     }
 
     public double[] sortTemps() {
-        return null;
+        double[] sorted = Arrays.copyOf(temperatures, size);
+        Arrays.sort(sorted);
+        return sorted;
     }
 
     public TempSummaryStatistics summaryStatistics() {
-        return null;
+        if (size == 0) {
+            throw new IllegalArgumentException();
+        }
+
+        return new TempSummaryStatistics(average(), deviation(), min(), max());
     }
 
     public int addTemps(double... temps) {
-        return 0;
+        for (double temp : temps) {
+            if (temp < -273) {
+                throw new InputMismatchException();
+            }
+        }
+        if (size + temps.length > temperatures.length) {
+            temperatures = Arrays.copyOf(temperatures, (size + temps.length) * 2);
+        }
+        System.arraycopy(temps, 0, temperatures, size, temps.length);
+        size += temps.length;
+        return size;
     }
 }
