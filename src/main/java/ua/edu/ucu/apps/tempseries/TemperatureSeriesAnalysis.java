@@ -4,7 +4,7 @@ import java.util.InputMismatchException;
 import java.util.Arrays;
 
 public class TemperatureSeriesAnalysis {
-    private static final double zeroTemp = -273.0;
+    private static final double ZERO = -273.0;
     private double[] temperatures;
     private int size;
 
@@ -14,7 +14,7 @@ public class TemperatureSeriesAnalysis {
     }
 
     public TemperatureSeriesAnalysis(double[] temperatures) {
-        if (Arrays.stream(temperatures).min().orElse(0) < zeroTemp 
+        if (Arrays.stream(temperatures).min().orElse(0) < ZERO 
          || temperatures.length == 0) {
             throw new InputMismatchException();
         }
@@ -135,7 +135,7 @@ public class TemperatureSeriesAnalysis {
 
     public int addTemps(double... temps) {
         for (double temp : temps) {
-            if (temp < zeroTemp) {
+            if (temp < ZERO) {
                 throw new InputMismatchException();
             }
         }
